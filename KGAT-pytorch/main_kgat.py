@@ -82,6 +82,8 @@ def train(args):
 
     # construct model & optimizer
     model = KGAT(args, data.n_users, data.n_entities, data.n_relations, data.A_in, user_pre_embed, item_pre_embed)
+    model = torch.nn.DataParallel(model, device_ids = [0,1]).to(device)
+    
     if args.use_pretrain == 2:
         model = load_model(model, args.pretrain_model_path)
 
