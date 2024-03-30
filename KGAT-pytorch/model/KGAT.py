@@ -189,13 +189,23 @@ class KGAT(nn.Module):
         r_embed = self.relation_embed.weight[r_idx]
         W_r = self.trans_M[r_idx]
 
-        h_embed = self.entity_user_embed.weight[h_list]
-        t_embed = self.entity_user_embed.weight[t_list]
-
         # Equation (4)
-        r_mul_h = torch.matmul(h_embed, W_r)
-        r_mul_t = torch.matmul(t_embed, W_r)
-        v_list = torch.sum(r_mul_t * torch.tanh(r_mul_h + r_embed), dim=1)
+        chunk_size = 10000
+        v_list = []
+        for chunk_id in range(0, len(h_list), chunk_size):
+            h_list_chunk = h_list[chunk_id: chunk_id + chunk_size]
+            t_list_chunk = t_list[chunk_id: chunk_id + chunk_size]
+            
+            h_embed_chunk = self.entity_user_embed.weight[h_list_chunk]
+            t_embed_chunk = self.entity_user_embed.weight[t_list_chunk]
+
+            r_mul_h_chunk = torch.matmul(h_embed_chunk, W_r)
+            r_mul_t_chunk = torch.matmul(t_embed_chunk, W_r)
+
+            v_chunk = torch.sum(r_mul_t_chunk * torch.tanh(r_mul_h_chunk + r_embed), dim=1)
+            v_list.append(v_chunk)
+        v_list = torch.cat(v_list)
+        print(v_list.shape)
         return v_list
 
 
@@ -221,9 +231,12 @@ class KGAT(nn.Module):
         values = torch.cat(values)
 
         indices = torch.stack([rows, cols])
+        # print('===== Importance')
+        # print(rows.shape, cols.shape, values.shape)
+
         shape = self.A_in.shape
         A_in = torch.sparse.FloatTensor(indices, values, torch.Size(shape))
-
+        # print(indices.shape, shape)
         # Equation (5)
         A_in = torch.sparse.softmax(A_in.cpu(), dim=1)
         self.A_in.data = A_in.to(device)
@@ -252,5 +265,3 @@ class KGAT(nn.Module):
             return self.update_attention(*input)
         if mode == 'predict':
             return self.calc_score(*input)
-
-
