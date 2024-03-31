@@ -73,48 +73,51 @@ class NFM(nn.Module):
             self.h = nn.Linear(self.hidden_dim_list[-1], 1, bias=False)
             nn.init.xavier_uniform_(self.h.weight)
 
-
     def calc_score(self, feature_values):
         """
         feature_values:  (batch_size, n_features), n_features = n_users + n_entities, torch.sparse.FloatTensor
         """
-        # Bi-Interaction layer
-        # Equation (4) / (3)
         
-        batch_size = 1000
-        n_samples = feature_values.shape[0]
-        n_batches = (n_samples + batch_size - 1) // batch_size
+        batch_size, n_features = feature_values.shape
+        embed_dim = self.feature_embed.shape[1]
         
-        y_list = []
+        chunk_size = 1000  
+        n_chunks = batch_size // chunk_size
         
-        for i in range(n_batches):
-                start_idx = i * batch_size
-                end_idx = min((i + 1) * batch_size, n_samples)
+        if batch_size % chunk_size != 0:
+            n_chunks += 1
         
-                batch_feature_values = feature_values[start_idx:end_idx, :]
+        z_list = []
         
-                # Bi-Interaction layer
-                # Equation (4) / (3)
-                sum_square_embed = torch.mm(batch_feature_values, self.feature_embed).pow(2)           # (batch_size, embed_dim)
-                square_sum_embed = torch.mm(batch_feature_values.pow(2), self.feature_embed.pow(2))    # (batch_size, embed_dim)
-                z_batch = 0.5 * (sum_square_embed - square_sum_embed)                                  # (batch_size, embed_dim)
-                
-                if self.model_type == 'nfm':
-                    # Equation (5)
-                    for j, layer in enumerate(self.hidden_layers):
-                        z_batch = layer(z_batch)                                # (batch_size, hidden_dim)
+        for i in range(n_chunks):
+            start_idx = i * chunk_size
+            end_idx = min((i + 1) * chunk_size, batch_size)
+            
+            chunk = feature_values[start_idx:end_idx, :]  # (chunk_size, n_features)
+            
+            # Bi-Interaction layer
+            sum_square_embed = torch.mm(chunk, self.feature_embed).pow(2)          # (chunk_size, embed_dim)
+            square_sum_embed = torch.mm(chunk.pow(2), self.feature_embed.pow(2))   # (chunk_size, embed_dim)
+            z_chunk = 0.5 * (sum_square_embed - square_sum_embed)                  # (chunk_size, embed_dim)
+            
+            if self.model_type == 'nfm':
+                # Equation (5)
+                for layer in self.hidden_layers:
+                    z_chunk = layer(z_chunk)  # (chunk_size, hidden_dim)
+            
+            z_list.append(z_chunk)
         
-                # Prediction layer
-                # Equation (6)
-                y_batch = self.h(z_batch)                                       # (batch_size, 1)
-                # Equation (2) / (7) / (8)
-                y_batch = self.linear(batch_feature_values) + y_batch           # (batch_size, 1)
-                
-                y_list.append(y_batch)
+        # Ghép các phần nhỏ của z lại thành một ma trận
+        z = torch.cat(z_list, dim=0)  # (batch_size, embed_dim)
         
-        # Concatenate the batches
-        y = torch.cat(y_list, dim=0)                        # (n_samples, 1)
-        return y.squeeze()                                  # (batch_size)
+        # Prediction layer
+        y = self.h(z)  # (batch_size, 1)
+        
+        # Equation (2) / (7) / (8)
+        y = self.linear(feature_values) + y  # (batch_size, 1)
+        
+        return y.squeeze()  # (batch_size)
+
 
 
     def calc_loss(self, pos_feature_values, neg_feature_values):
