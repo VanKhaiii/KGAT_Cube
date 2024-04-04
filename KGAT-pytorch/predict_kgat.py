@@ -48,7 +48,7 @@ def evaluate(model, dataloader, Ks, device, save_cf_scores=False):
             # print(batch_scores.shape)
 
             if save_cf_scores:
-                np.save(f'{args.save_dir}/cf_scores_{bid}.npy', batch_scores.numpy())
+                np.save(f'{args.save_dir}cf_scores_{bid}.npy', batch_scores.numpy())
             
             cf_scores.append(batch_scores.numpy())
             for k in Ks:
@@ -75,7 +75,7 @@ def predict(args):
     model = KGAT(args, data.n_users, data.n_entities, data.n_relations)
     model = load_model(model, args.pretrain_model_path)
     model.to(device)
-
+    
     # predict
     Ks = eval(args.Ks)
     k_min = min(Ks)
