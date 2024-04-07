@@ -172,7 +172,7 @@ class DataLoaderBase(object):
 
     def load_pretrained_data(self):
         pre_model = 'mf'
-        pretrain_path = '%s/%s/%s.npz' % (self.pretrain_embedding_dir, self.data_name, pre_model)
+        pretrain_path = '%s/%s.npz' % (self.pretrain_embedding_dir, pre_model)
         pretrain_data = np.load(pretrain_path)
         self.user_pre_embed = pretrain_data['user_embed']
         self.item_pre_embed = pretrain_data['item_embed']
