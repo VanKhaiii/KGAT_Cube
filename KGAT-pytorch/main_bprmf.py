@@ -20,15 +20,23 @@ def evaluate(model, dataloader, Ks, device):
     test_batch_size = dataloader.test_batch_size
     train_user_dict = dataloader.train_user_dict
     test_user_dict = dataloader.test_user_dict
+    print(test_user_dict)
+    print("================test_user_dict==============")
 
     model.eval()
 
     user_ids = list(test_user_dict.keys())
     user_ids_batches = [user_ids[i: i + test_batch_size] for i in range(0, len(user_ids), test_batch_size)]
     user_ids_batches = [torch.LongTensor(d) for d in user_ids_batches]
+    print(user_ids_batches)
+    print("===============user_ids_batches================")
 
-    n_items = dataloader.n_items
+    n_items = dataloader
+    print(n_items)
+    print("----------------------n_itmes--------------------")
     item_ids = torch.arange(n_items, dtype=torch.long).to(device)
+    print(item_ids)
+    print("-------------items_ids_____________________")
 
     cf_scores = []
     metric_names = ['precision', 'recall', 'ndcg']
@@ -40,6 +48,8 @@ def evaluate(model, dataloader, Ks, device):
 
             with torch.no_grad():
                 batch_scores = model(batch_user_ids, item_ids, is_train=False)       # (n_batch_users, n_items)
+                print(batch_scores)
+                
 
             batch_scores = batch_scores.cpu()
             batch_metrics = calc_metrics_at_k(batch_scores, train_user_dict, test_user_dict, batch_user_ids.cpu().numpy(), item_ids.cpu().numpy(), Ks)
