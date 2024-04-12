@@ -29,7 +29,7 @@ def evaluate(model, dataloader, Ks, device):
     print(user_ids_batches)
     print("===============user_ids_batches================")
 
-    n_items = dataloader
+    n_items = dataloader.n_items
     print(n_items)
     print("----------------------n_itmes--------------------")
     item_ids = torch.arange(n_items, dtype=torch.long).to(device)
