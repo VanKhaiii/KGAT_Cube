@@ -20,8 +20,6 @@ def evaluate(model, dataloader, Ks, device):
     test_batch_size = dataloader.test_batch_size
     train_user_dict = dataloader.train_user_dict
     test_user_dict = dataloader.test_user_dict
-    print(test_user_dict)
-    print("================test_user_dict==============")
 
     model.eval()
 
