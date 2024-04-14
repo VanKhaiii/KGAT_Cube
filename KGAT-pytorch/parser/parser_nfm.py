@@ -35,22 +35,22 @@ def parse_nfm_args():
                         help='Train batch size.')
     parser.add_argument('--test_batch_size', type=int, default=50,
                         help='Test batch size.')
-    parser.add_argument('--test_cores', type=int, default=32,
+    parser.add_argument('--test_cores', type=int, default=12,
                         help='Number of cores when evaluating.')
 
     parser.add_argument('--lr', type=float, default=0.0001,
                         help='Learning rate.')
     parser.add_argument('--n_epoch', type=int, default=1000,
                         help='Number of epoch.')
-    parser.add_argument('--stopping_steps', type=int, default=10,
+    parser.add_argument('--stopping_steps', type=int, default=5,
                         help='Number of epoch for early stopping')
 
     parser.add_argument('--print_every', type=int, default=1,
                         help='Iter interval of printing loss.')
-    parser.add_argument('--evaluate_every', type=int, default=10,
+    parser.add_argument('--evaluate_every', type=int, default=5,
                         help='Epoch interval of evaluating CF.')
 
-    parser.add_argument('--Ks', nargs='?', default='[20, 40, 60, 80, 100]',
+    parser.add_argument('--Ks', nargs='?', default='[1, 5, 10]',
                         help='Calculate metric@K when evaluating.')
 
     args = parser.parse_args()
@@ -61,5 +61,3 @@ def parse_nfm_args():
     args.save_dir = save_dir
 
     return args
-
-

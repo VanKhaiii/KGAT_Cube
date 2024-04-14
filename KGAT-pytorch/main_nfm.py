@@ -19,6 +19,7 @@ from data_loader.loader_nfm import DataLoaderNFM
 
 
 def evaluate_batch(model, dataloader, user_ids, Ks):
+    print("CALLED")
     train_user_dict = dataloader.train_user_dict
     test_user_dict = dataloader.test_user_dict
 
@@ -175,6 +176,9 @@ def train(args):
         n_batch = data.n_cf_train // data.train_batch_size + 1
 
         for iter in range(1, n_batch + 1):
+
+            break
+
             time2 = time()
             pos_feature_values, neg_feature_values = data.generate_train_batch(data.train_user_dict)
             pos_feature_values = pos_feature_values.to(device)
@@ -196,6 +200,8 @@ def train(args):
 
         # evaluate cf
         if (epoch % args.evaluate_every) == 0 or epoch == args.n_epoch:
+            print("EVALUATING...")
+
             time3 = time()
             _, metrics_dict = evaluate_func(model, data, Ks, num_processes, device)
             logging.info('CF Evaluation: Epoch {:04d} | Total Time {:.1f}s | Precision [{:.4f}, {:.4f}], Recall [{:.4f}, {:.4f}], NDCG [{:.4f}, {:.4f}]'.format(
@@ -271,5 +277,3 @@ if __name__ == '__main__':
     args = parse_nfm_args()
     train(args)
     # predict(args)
-
-
