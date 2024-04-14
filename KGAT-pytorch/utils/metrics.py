@@ -136,7 +136,7 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
 
     for idx, user in enumerate(user_ids):
         # Ground truth items for the user
-        test_item = test_user_dict[user]
+        test_item = torch.from_numpy(test_user_dict[user])
         
         # Items in the training set to be excluded
         train_items = set(train_user_dict[user])
@@ -144,13 +144,16 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
         # Negative samples: items not in the test items and not in the train items
         possible_negatives = [item for item in item_ids if item not in train_items and item not in test_item]
         negative_samples = np.random.choice(possible_negatives, num_negatives, replace=False)
+        negative_samples = torch.from_numpy(negative_samples)
         
         # Selected items for testing: ground truth + negative samples
-        test_set = list(test_item) + list(negative_samples)
+        test_set = test_item + negative_samples
         # test_indices.append(test_set)
 
         # Get the corresponding scores of these items from the cf_scores matrix
         temp_cf_scores.append(cf_scores[idx][test_set])
+        temp_cf_scores = torch.stack(temp_cf_scores, dim=0)
+        
     
     try:
         _, rank_indices = torch.sort(torch.LongTensor(temp_cf_scores).cuda(), descending=True)    # try to speed up the sorting process
