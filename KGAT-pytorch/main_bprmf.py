@@ -26,15 +26,15 @@ def evaluate(model, dataloader, Ks, device):
     user_ids = list(test_user_dict.keys())
     user_ids_batches = [user_ids[i: i + test_batch_size] for i in range(0, len(user_ids), test_batch_size)]
     user_ids_batches = [torch.LongTensor(d) for d in user_ids_batches]
-    print(user_ids_batches)
-    print("===============user_ids_batches================")
+    # print(user_ids_batches)
+    # print("===============user_ids_batches================")
 
     n_items = dataloader.n_items
-    print(n_items)
-    print("----------------------n_itmes--------------------")
+    # print(n_items)
+    # print("----------------------n_itmes--------------------")
     item_ids = torch.arange(n_items, dtype=torch.long).to(device)
-    print(item_ids)
-    print("-------------items_ids_____________________")
+    # print(item_ids)
+    # print("-------------items_ids_____________________")
 
     cf_scores = []
     metric_names = ['precision', 'recall', 'ndcg']
