@@ -153,7 +153,7 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
         if len(temp_cf_scores) == 0:
             temp_cf_scores.append(cf_scores[idx][test_set])
         else:
-            temp_cf_scores = torch.cat((temp_cf_scores, cf_scores[idx][test_set]), dim=0)
+            temp_cf_scores = torch.stack(temp_cf_scores, dim=0)
         
     
     try:
