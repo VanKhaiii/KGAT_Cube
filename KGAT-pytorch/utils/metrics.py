@@ -136,7 +136,7 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
 
     for idx, user in enumerate(user_ids):
         # Ground truth items for the user
-        test_item = torch.from_numpy(test_user_dict[user].numpy())
+        test_item = torch.tensor(test_user_dict[user])
         
         # Items in the training set to be excluded
         train_items = set(train_user_dict[user])
@@ -144,7 +144,7 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
         # Negative samples: items not in the test items and not in the train items
         possible_negatives = [item for item in item_ids if item not in train_items and item not in test_item]
         negative_samples = np.random.choice(possible_negatives, num_negatives, replace=False)
-        negative_samples = torch.from_numpy(negative_samples.numpy())
+        negative_samples = torch.tensor(negative_samples)
         
         # Selected items for testing: ground truth + negative samples
         test_set = test_item + negative_samples
