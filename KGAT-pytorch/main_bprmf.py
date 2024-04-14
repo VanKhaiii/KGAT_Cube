@@ -46,7 +46,7 @@ def evaluate(model, dataloader, Ks, device):
 
             with torch.no_grad():
                 batch_scores = model(batch_user_ids, item_ids, is_train=False)       # (n_batch_users, n_items)
-                print(batch_scores)
+                # print(batch_scores)
                 
 
             batch_scores = batch_scores.cpu()
