@@ -136,7 +136,7 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
 
     for idx, user in enumerate(user_ids):
         # Ground truth items for the user
-        test_item = torch.from_numpy(test_user_dict[user])
+        test_item = torch.from_numpy(test_user_dict[user].numpy())
         
         # Items in the training set to be excluded
         train_items = set(train_user_dict[user])
