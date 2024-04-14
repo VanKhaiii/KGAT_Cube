@@ -153,9 +153,9 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
         temp_cf_scores.append(cf_scores[idx][test_set])
 
     try:
-        _, rank_indices = torch.sort(torch.Tensor(temp_cf_scores).cuda(), descending=True)    # try to speed up the sorting process
+        _, rank_indices = torch.sort(torch.Tensor(temp_cf_scores.numpy()).cuda(), descending=True)    # try to speed up the sorting process
     except:
-        _, rank_indices = torch.sort(torch.Tensor(temp_cf_scores).cuda(), descending=True)
+        _, rank_indices = torch.sort(torch.Tensor(temp_cf_scores.numpy()), descending=True)
 
     rank_indices = rank_indices.cpu()
 
