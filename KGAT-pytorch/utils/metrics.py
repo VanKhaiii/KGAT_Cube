@@ -127,7 +127,7 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
     temp_cf_scores = []
     test_indices = []
 
-    test_pos_item_binary = np.concat((
+    test_pos_item_binary = np.concatenate((
         np.ones((len(user_ids), 1)),
         np.zeros((len(user_ids), num_negatives))
     ), axis=1)
