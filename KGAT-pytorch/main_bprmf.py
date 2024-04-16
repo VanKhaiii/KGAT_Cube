@@ -117,6 +117,7 @@ def train(args):
         n_batch = data.n_cf_train // data.train_batch_size + 1
 
         for iter in range(1, n_batch + 1):
+        
             time2 = time()
             batch_user, batch_pos_item, batch_neg_item = data.generate_cf_batch(data.train_user_dict, data.train_batch_size)
             batch_user = batch_user.to(device)
@@ -132,6 +133,8 @@ def train(args):
             optimizer.step()
             optimizer.zero_grad()
             total_loss += batch_loss.item()
+            
+            if iter == 5 : break
 
             if (iter % args.print_every) == 0:
                 logging.info('CF Training: Epoch {:04d} Iter {:04d} / {:04d} | Time {:.1f}s | Iter Loss {:.4f} | Iter Mean Loss {:.4f}'.format(epoch, iter, n_batch, time() - time2, batch_loss.item(), total_loss / iter))
