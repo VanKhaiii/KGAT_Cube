@@ -71,8 +71,7 @@ def predict(args):
 
     # predict
     Ks = eval(args.Ks)
-    k_min = min(Ks)
-    k_max = max(Ks)
+    
 
     cf_scores, metrics_dict = evaluate(model, data, Ks, device)
     
@@ -84,8 +83,8 @@ def predict(args):
     
     print(cf_scores)
     
-    print('CF Evaluation: Precision [{:.4f}, {:.4f}], Recall [{:.4f}, {:.4f}], NDCG [{:.4f}, {:.4f}]'.format(
-        metrics_dict[k_min]['precision'], metrics_dict[k_max]['precision'], metrics_dict[k_min]['recall'], metrics_dict[k_max]['recall'], metrics_dict[k_min]['ndcg'], metrics_dict[k_max]['ndcg']))
+    print('CF Evaluation: Recall [{:.4f}, {:.4f}, {:.4f}], NDCG [{:.4f}, {:.4f}, {:.4f}]'.format(
+         metrics_dict[1]['recall'], metrics_dict[5]['recall'], metrics_dict[10]['recall'], metrics_dict[1]['ndcg'], metrics_dict[5]['ndcg'], metrics_dict[10]['ndcg']))
 
 
 
